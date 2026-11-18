@@ -42,3 +42,5 @@ For manual POST requests, set the `Origin` header to the frontend URL. Use `Cont
 ## Tests
 
 After `npm install`, run `npm test`. To include the MongoDB integration tests, run `TEST_MONGODB_URI=mongodb://127.0.0.1:27017 npm test` with MongoDB running locally.
+
+GitHub Actions runs the unit and integration tests on pull requests and pushes to `main`. [Test workflow](./.github/workflows/tests.yml)
