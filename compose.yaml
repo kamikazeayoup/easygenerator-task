@@ -1,0 +1,77 @@
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      edge: {}
+      proxy_api:
+        ipv4_address: ${BACKEND_PROXY_ADDRESS:-172.30.83.2}
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    logging:
+      driver: local
+      options:
+        max-size: '5m'
+        max-file: '3'
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      PUBLIC_ORIGIN: http://localhost:8080
+      ALLOW_INSECURE_HTTP: 'true'
+      TRUST_PROXY_ADDRESS: ${BACKEND_PROXY_ADDRESS:-172.30.83.2}
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DATABASE: easygenerator
+      RATE_LIMIT_MAX_KEYS: ${RATE_LIMIT_MAX_KEYS:-10000}
+      SIGN_IN_IP_LIMIT: ${SIGN_IN_IP_LIMIT:-60}
+      SIGN_IN_EMAIL_LIMIT: ${SIGN_IN_EMAIL_LIMIT:-5}
+      SIGN_IN_WINDOW_SECONDS: ${SIGN_IN_WINDOW_SECONDS:-300}
+      SIGN_UP_IP_LIMIT: ${SIGN_UP_IP_LIMIT:-20}
+      SIGN_UP_EMAIL_LIMIT: ${SIGN_UP_EMAIL_LIMIT:-5}
+      SIGN_UP_WINDOW_SECONDS: ${SIGN_UP_WINDOW_SECONDS:-900}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - jwt_key:/var/lib/easygenerator
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health/ready').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks: [proxy_api, database]
+
+  mongo:
+    image: mongo:7.0
+    volumes:
+      - mongo_data_v7:/data/db
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand({ ping: 1 }).ok === 1 ? 0 : 1)"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    networks: [database]
+
+networks:
+  edge: {}
+  proxy_api:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${BACKEND_PROXY_SUBNET:-172.30.83.0/24}
+          ip_range: ${BACKEND_PROXY_DYNAMIC_RANGE:-172.30.83.128/25}
+  database:
+    internal: true
+
+volumes:
+  mongo_data_v7:
+  jwt_key:
