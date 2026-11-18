@@ -30,7 +30,7 @@ In a second terminal, run `npm run dev` from the root and open [localhost:5173](
 
 | Endpoint | What it does |
 | --- | --- |
-| `POST /api/auth/sign-up` | Accepts `name`, `email`, and `password`. Returns `204` for a valid submission. |
+| `POST /api/auth/sign-up` | Accepts `name`, `email`, and `password`. Returns `204` when the account is created or `409` with an email field error when the address is already registered. |
 | `POST /api/auth/sign-in` | Accepts `email` and `password`. Sets the auth cookies on success (`204`). |
 | `GET /api/auth/me` | Returns the signed-in user's `id`, `name`, and `email`, or `401` when signed out. |
 | `POST /api/auth/refresh` | Uses the refresh cookie to renew both tokens (`204`). |

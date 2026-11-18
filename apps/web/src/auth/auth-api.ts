@@ -37,7 +37,7 @@ async function post(path: string, payload?: SignInInput | SignUpInput) {
 
   if (response.status === 204) return;
 
-  const validation = response.status === 400
+  const validation = response.status === 400 || response.status === 409
     ? validationErrorSchema.safeParse(await response.json().catch(() => undefined)).data
     : undefined;
   const retryAfter = response.headers.get('Retry-After') ?? '';

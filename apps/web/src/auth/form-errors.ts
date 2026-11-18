@@ -10,7 +10,7 @@ export function reportFormError<T extends FieldValues>(
   let message = fallback;
 
   if (error instanceof AuthApiError) {
-    if (error.status === 400) {
+    if (error.status === 400 || error.status === 409) {
       let focusFirst = true;
       for (const field of fields) {
         const fieldMessage = error.validation?.fieldErrors?.[field]?.[0];

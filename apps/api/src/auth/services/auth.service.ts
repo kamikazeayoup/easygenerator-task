@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { OnModuleInit } from '@nestjs/common';
 import { hash, verify, argon2id } from 'argon2';
 import { randomBytes } from 'node:crypto';
@@ -25,7 +25,11 @@ export class AuthService implements OnModuleInit {
 
   async register(input: SignUpDto, ip: string): Promise<void> {
     this.limits.reserveEmail('signUp', input.email, ip);
-    await this.users.insertIfNew(input, await hash(input.password, passwordOptions));
+    const created = await this.users.insertIfNew(input, await hash(input.password, passwordOptions));
+    if (!created) {
+      const message = 'This email address is already registered.';
+      throw new ConflictException({ statusCode: 409, message, fieldErrors: { email: [message] } });
+    }
   }
 
   async authenticate({ email, password }: SignInDto, ip: string): Promise<string> {

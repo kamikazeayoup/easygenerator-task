@@ -143,11 +143,13 @@ test('registration, JWT sign-in, restart, and private auth logs', options, async
     request('sign-up', { body: user }),
     request('sign-up', { body: { ...user, email: 'a.da+course@example.com' } }),
   ]);
-  assert.deepEqual(registrations.map((response) => response.status), [204, 204]);
+  assert.deepEqual(registrations.map((response) => response.status).sort(), [204, 409]);
   assert.equal(await db.collection('users').countDocuments(), 1);
   assert.match((await db.collection('users').findOne()).passwordHash, /^\$argon2id\$/);
   const duplicate = { ...user, password: 'Different123!' };
-  assert.equal((await request('sign-up', { body: duplicate })).status, 204);
+  const conflict = await request('sign-up', { body: duplicate });
+  assert.equal(conflict.status, 409);
+  assert.deepEqual((await conflict.json()).fieldErrors, { email: ['This email address is already registered.'] });
   const wrong = await request('sign-in', { body: duplicate });
   const unknown = await request('sign-in', { body: { ...duplicate, email: 'unknown@example.com' } });
   assert.equal(wrong.status, 401);
@@ -180,12 +182,13 @@ test('registration, JWT sign-in, restart, and private auth logs', options, async
   const acceptedSignin = { ...acceptedSignup, action: 'sign-in' };
   const rejectedSignup = { ...acceptedSignup, outcome: 'rejected' };
   const rejectedSignin = { ...acceptedSignin, outcome: 'rejected', statusCode: 401 };
-  assert.deepEqual(events, [
+  const byStatus = (a, b) => a.statusCode - b.statusCode;
+  assert.deepEqual(events.toSorted(byStatus), [
     ...[403, 403, 415, 413, 400, 400].map((statusCode) => ({ ...rejectedSignup, statusCode })),
-    acceptedSignup, acceptedSignup, acceptedSignup,
+    acceptedSignup, { ...rejectedSignup, statusCode: 409 }, { ...rejectedSignup, statusCode: 409 },
     rejectedSignin, rejectedSignin,
     acceptedSignin, acceptedSignin,
-  ]);
+  ].toSorted(byStatus));
   for (const value of [
     user.password, duplicate.password, user.email.trim(), 'a.da+course@example.com', 'unknown@example.com',
     decodeJwt(second.access.value).sid, first.access.value, first.refresh.value, second.access.value, second.refresh.value,
@@ -279,7 +282,7 @@ test('independent IP and email budgets reserve concurrent attempts and expire wi
   const sharedIp = 10;
 
   assert.equal((await signup(email, sharedIp)).status, 204);
-  assert.equal((await signup(' ADA@EXAMPLE.COM ', 11)).status, 204);
+  assert.equal((await signup(' ADA@EXAMPLE.COM ', 11)).status, 409);
   assert.equal((await signup(email, 12)).status, 429);
   assert.equal((await signin(email, sharedIp, 'Example123!')).status, 204);
 

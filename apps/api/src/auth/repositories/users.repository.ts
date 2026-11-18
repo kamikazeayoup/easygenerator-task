@@ -18,12 +18,13 @@ export class UsersRepository {
     return this.database.dataSource.getMongoRepository(User);
   }
 
-  async insertIfNew({ name, email }: Pick<User, 'name' | 'email'>, passwordHash: string): Promise<void> {
+  async insertIfNew({ name, email }: Pick<User, 'name' | 'email'>, passwordHash: string): Promise<boolean> {
     try {
       await this.users.insertOne({ name, email, passwordHash });
+      return true;
     } catch (error) {
       if (error instanceof MongoServerError && error.code === 11000 && error.keyPattern?.email === 1) {
-        return;
+        return false;
       }
       throw error;
     }
