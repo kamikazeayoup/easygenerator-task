@@ -1,0 +1,160 @@
+.auth-form {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.form-field label {
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+
+.field-control {
+  position: relative;
+}
+
+.field-control input {
+  min-height: 3.25rem;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color var(--transition);
+}
+
+.field-control input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.field-control input:hover, .field-control input:focus {
+  border-color: var(--color-focus);
+}
+
+.field-control input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.field-control--password input {
+  padding-inline-end: 3.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 0.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.password-toggle:hover {
+  background: var(--color-surface-hover);
+}
+
+.password-toggle svg, .button svg, .notice svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.field-hint, .field-error {
+  font-size: var(--text-small);
+}
+
+.field-hint {
+  color: var(--color-muted);
+}
+
+.field-error {
+  color: var(--color-error);
+}
+
+.button {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transition), opacity var(--transition);
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.74;
+}
+
+.button--primary {
+  width: 100%;
+  padding-inline: 3rem;
+  border-color: var(--color-accent);
+  background: var(--color-brand-coral);
+  color: var(--color-text);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--color-action-hover);
+}
+
+.button--primary svg {
+  position: absolute;
+  inset-inline-end: 1rem;
+  transition: transform var(--transition);
+}
+
+.auth-form .button--primary:hover:not(:disabled) svg {
+  transform: translateX(2px);
+}
+
+.button--secondary {
+  border-color: var(--color-control-border);
+  color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius);
+}
+
+.notice svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.notice--error {
+  color: var(--color-error);
+  background: var(--color-error-surface);
+}
+
+.notice--success {
+  color: var(--color-success);
+  background: var(--color-success-surface);
+}
