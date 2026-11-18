@@ -1,0 +1,156 @@
+.app-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
+  min-height: 100svh;
+}
+
+.brand-panel {
+  position: sticky;
+  top: 0;
+  isolation: isolate;
+  overflow: hidden;
+  height: 100svh;
+  padding: 2rem clamp(2rem, 4vw, 4.5rem);
+  background: var(--color-brand-surface);
+}
+
+.brand-artwork {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 62%;
+}
+
+.brand-panel::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, var(--color-brand-surface), transparent 23%);
+}
+
+.brand {
+  display: inline-block;
+  border-radius: 0.25rem;
+}
+
+.brand-logo {
+  display: block;
+  width: 11rem;
+  height: auto;
+}
+
+.page-panel {
+  position: relative;
+  display: grid;
+  align-content: center;
+  background: var(--color-page);
+  padding: 6rem clamp(2rem, 6vw, 6rem) 4.5rem;
+}
+
+.page-content {
+  width: min(100%, 28rem);
+  margin-inline: auto;
+}
+
+.page-heading {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.page-heading p {
+  color: var(--color-muted);
+}
+
+.account-navigation {
+  position: absolute;
+  top: 2.75rem;
+  right: clamp(2rem, 4vw, 4.5rem);
+  color: var(--color-muted);
+  font-size: var(--text-small);
+}
+
+.account-navigation a {
+  margin-inline-start: 0.2em;
+  font-weight: 700;
+}
+
+.account-details {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  margin-bottom: 1.75rem;
+  border-block: 1px solid var(--color-line);
+  overflow-wrap: anywhere;
+}
+
+.account-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius);
+  color: var(--color-accent);
+  background: var(--color-brand-gold);
+}
+
+.account-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.account-name {
+  font-size: var(--text-heading);
+  font-weight: 650;
+}
+
+.account-email {
+  color: var(--color-muted);
+}
+
+.account-details + .notice {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 760px) {
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .brand-panel {
+    position: relative;
+    height: auto;
+    padding: 1rem 1.5rem;
+  }
+
+  .brand-logo {
+    width: 9rem;
+  }
+
+  .brand-artwork {
+    inset-inline-start: auto;
+    width: min(64%, 20rem);
+    object-position: center 64%;
+  }
+
+  .brand-panel::after {
+    background: linear-gradient(90deg, var(--color-brand-surface) 40%, transparent 95%);
+  }
+
+  .page-panel {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .account-navigation {
+    position: static;
+    width: min(100%, 28rem);
+    margin: 2.25rem auto 0;
+  }
+}
